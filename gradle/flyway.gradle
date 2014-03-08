@@ -1,0 +1,39 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		println "resource path = " + project.ext.config.resource.path
+		classpath files(project.ext.config.resource.path)
+		classpath 'com.googlecode.flyway:flyway-core:2.1'
+		classpath 'mysql:mysql-connector-java:5.1.26'
+	}
+}
+
+import com.googlecode.flyway.core.Flyway
+import com.googlecode.flyway.core.api.MigrationInfo
+import com.googlecode.flyway.core.api.MigrationInfoService
+import com.googlecode.flyway.core.util.DateUtils
+
+println project.ext.config.db.url
+println project.ext.config.db.username
+println project.ext.config.db.password
+
+def flyway = new Flyway()
+flyway.setDataSource(config.db.url, config.db.username, config.db.password)
+
+task flywayInit << { flyway.init() }
+task flywayClean << { flyway.clean() }
+task flywayMigrate << { flyway.migrate() }
+task flywayRepair << { flyway.repair() }
+task flywayInfo << {
+	def migrationInfoService = flyway.info()
+	migrationInfoService.all().each{
+		println "Version : " + it.getVersion()
+		def description = it.getDescription() == null ? "" : it.getDescription()
+		println "  Description  : " + description
+		println "  Installed on : " + DateUtils.formatDateAsIsoString(it.getInstalledOn())
+		println "  State        : " + it.getState().name()
+	}
+}
+

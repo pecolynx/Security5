@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Main</title>
+</head>
+<body>
+ログインしました。<br />
+こんにちは${loginId}さん
+<a href="#springUrl('/j_spring_security_logout')">ログアウト</a>
+</body>

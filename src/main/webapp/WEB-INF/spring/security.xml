@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+	
+	<security:http auto-config="true" >
+		<security:intercept-url pattern="/view/**" access="ROLE_USER" />
+		<security:form-login login-page="/login" 
+			authentication-failure-handler-ref="authenticationFailureHandler"
+			authentication-success-handler-ref="authenticationSuccessHandler" />
+		<security:logout success-handler-ref="logoutHandler" />
+		<security:remember-me services-ref="rememberMeServices"  key="myAppKey" />
+	</security:http>
+	
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider user-service-ref="loginUserService">
+			<security:password-encoder ref="passwordEncoder" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+	
+	<bean id="passwordEncoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder" />
+	
+	<bean id="loginUserService" class="security.security.LoginUserService" />
+	
+	<bean id="authenticationSuccessHandler" class="security.security.SuccessHandler">
+		<property name="defaultTargetUrl" value="/view" />
+	</bean>
+	
+	<bean id="authenticationFailureHandler"	class="security.security.FailureHandler" />
+	
+	<bean id="logoutHandler" class="security.security.LogoutHandler" />
+
+	<bean id="rememberMeServices" class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
+		<property name="userDetailsService" ref="loginUserService"/>
+		<property name="tokenValiditySeconds" value="864000"/>
+		<property name="key" value="myAppKey"/>
+	</bean>
+</beans>

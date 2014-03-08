@@ -1,0 +1,10 @@
+db {
+	driverClassName = "com.mysql.jdbc.Driver"
+	url = "jdbc:mysql://localhost/boog"
+	username = "root"
+	password = "mysql"
+}
+
+resource {
+	path = "main/resources"
+}
